@@ -1,0 +1,25 @@
+diff --git a/services/java/com/android/server/am/ActivityManagerService.java b/services/java/com/android/server/am/ActivityManagerService.java
+index 95d3c41..843815c 100644
+--- a/services/java/com/android/server/am/ActivityManagerService.java
++++ b/services/java/com/android/server/am/ActivityManagerService.java
+@@ -2144,6 +2144,20 @@ public final class ActivityManagerService extends ActivityManagerNative
+         ActivityInfo aInfo =
+             intent.resolveActivityInfo(mContext.getPackageManager(),
+                     STOCK_PM_FLAGS);
++        // SDG Addition Begin
++        {
++            // If a "RUN_AT_BOOT" activity exists, then run it instead of
++            // the Home activity.
++            Intent runAtBoot = new Intent(Intent.ACTION_MAIN);
++            runAtBoot.addCategory("RUN_AT_BOOT");
++            ActivityInfo aInfo2 = runAtBoot.resolveActivityInfo(
++                    mContext.getPackageManager(), STOCK_PM_FLAGS);
++            if (aInfo2 != null) {
++                aInfo = aInfo2;
++                Slog.d(TAG, "Running RUN_AT_BOOT activity " + aInfo.name);//ZZZ
++            }
++        }
++        // SDG Addition End
+         if (aInfo != null) {
+             intent.setComponent(new ComponentName(
+                     aInfo.applicationInfo.packageName, aInfo.name));
